@@ -1,7 +1,7 @@
 import random
 from enum import Enum
 import functools
-from utils import cum_weights, randbool, randquarter
+from tasks.utils import cum_weights, randbool, randquarter
 
 class Mod(Enum):
     COMMON = 'Common'
@@ -33,7 +33,7 @@ def mul_get(mod, diff):
     def mul_comm(low, high):
         a = random.randint(low, high)
         b = random.randint(low, high)
-        return '{a} * {b} = ?', '%f'% a * b
+        return f'{a} * {b} = ?', f'{a*b}'
 
     def mul_neg(low, high):
         a = random.randint(low, high)
@@ -76,9 +76,15 @@ def mul_get(mod, diff):
         case Mod.FLOAT:
             return functools.partial(mul_float, *diff['fnums']), diff
 
-            
-
-
+def diff_get(val=None):
+    if val:
+        for i, diff in enumerate(mul['difficulty']):
+            if diff['name'] == val:
+                 return i
+    diffs = []
+    for diff in mul['difficulty']:
+        diffs.append(diff['name'])
+    return diffs
 
 mul = {
     'name':'Multiplication',
@@ -92,5 +98,6 @@ mul = {
         {'name': 'random', 'lvl': 4,'nums': (0, 300), 'fnums':(1, 316, 3)},
     ],
     'mod': Mod,
-    'get':mul_get
+    'get': mul_get,
+    'diff': diff_get,
 }

@@ -1,13 +1,25 @@
 import PySimpleGUI as sg
-from levels import levels
+#from levels import levels
 from game import start_quiz
+import tasks
+import db
 
 fnt = 'Arial 30'
 sg.theme('DarkBlue14')   # Add a touch of color
 # All the stuff inside your window.
-layout = [  [sg.Text('Some text on Row 1', font=fnt)],
-            [sg.Text('Enter something on Row 2'), sg.InputText(enable_events=True)],
-            [sg.Button('Start')] ]
+
+qtype = tasks.EToList(tasks.OpType)
+qdata = tasks.choose(qtype[0])
+qmod = qdata['mod']
+qdiff = qdata['difficulty']
+
+layout = [  
+    [sg.Text('Some text on Row 1', font=fnt)],
+    [sg.Combo(qtype, key = 'quiz', default_value=qtype[0])], 
+    [sg.Combo(tasks.EToList(qmod), key = 'mod', default_value=tasks.EToList(qmod)[0])],
+    [sg.Combo(qdata['diff'](), key = 'diff', default_value=qdata['diff']()[0])],
+    [sg.Button('Start')], 
+]
 
 # Create the Window
 window = sg.Window('Window Title', layout)
@@ -18,6 +30,11 @@ while True:
     if event == sg.WIN_CLOSED:
         break
     if event == 'Start':
-        values = start_quiz('test', levels[0][3](0, 40, 'Common'), 10)
-
+        cur_diff = qdiff[qdata['diff'](values['diff'])]
+        print(cur_diff)
+        qfunc = qdata['get'](values['mod'], cur_diff)
+        *data_to_save, answers = start_quiz('test', qfunc, 1000, values['mod'], values['quiz'])
+        print(data_to_save)
+        print(answers)
+        db.save(*data_to_save)
 window.close()
