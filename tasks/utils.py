@@ -1,4 +1,5 @@
 import random
+from tasks import OpType, tbnames
 
 def cum_weights(weights):
     cum_w = []

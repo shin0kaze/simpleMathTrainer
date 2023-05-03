@@ -9,12 +9,10 @@ if not os.path.isfile('sqlite3.db'):
     pass
 
 def dbconnect():
-    con = sqlite3.connect(dbpath)
-    cur = con.cursor()
-    return con, cur
+    return sqlite3.connect(dbpath, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
 
 def save(count, operation, difficulty, modification, time, timer, min, max, avg, errors=0,):
-    with sqlite3.connect(dbpath) as conn:
+    with dbconnect() as conn:
         cur = conn.cursor()
         row = (count, operation, difficulty, modification, time, timer, avg, min, max, errors, datetime.datetime.now())
         insert_q = 'INSERT INTO quiztable' \
@@ -22,11 +20,12 @@ def save(count, operation, difficulty, modification, time, timer, min, max, avg,
                 'VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
         cur.execute(insert_q, row)
 
-def read(operation, difficulty, modification, timer = 180, full=True):
-    with sqlite3.connect(dbpath) as conn:
+def read(operation, difficulty, modification, full, timer = 180):
+    with dbconnect() as conn:
         cur = conn.cursor()
-        condition = f'operation == {operation} and difficulty == {difficulty} and modification == {modification} and timer == {timer} and time >= timer'
-        select_q = f'SELECT count, speed, min, max FROM quiztable WHERE {condition}'
+        complete_only = ' and time >= timer' if full else ''
+        condition = f"operation == '{operation}' and difficulty == '{difficulty}' and modification == '{modification}' and timer == {timer} {complete_only}"
+        select_q = f'SELECT id, speed, min, max FROM quiztable WHERE {condition}'
         cur.execute(select_q)
         return cur.fetchall()
 
@@ -51,7 +50,7 @@ def db_get_traintable(tbname):
     return data
 
 def db_upd_traintable(tbname, db_entities, entities):
-    cursor = sqlite3.connect().cursor()
+    cursor = dbconnect().cursor()
     db_upd_ents = upd_traintable_data(db_entities, entities)
     update_q = f'UPDATE {tbname} VALUES (id, question, answer) VALUES (?,?,?)'
     cursor.executemany(update_q, db_upd_ents)

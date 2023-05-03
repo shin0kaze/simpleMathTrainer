@@ -1,12 +1,13 @@
 import sqlite3
 from string import Template
 import logging
+from db import dbconnect
 
 template_tables = ['multable', 'subtable']
-create_template_q = Template('CREATE TABLE $tbname (id INT PRIMARY KEY, prob real, question text, answer text)')
+create_template_q = Template('CREATE TABLE $tbname (id INTEGER PRIMARY KEY, prob real, question text, answer text)')
 insert_template_q = Template('INSERT INTO $tbname (prob, question, answer) VALUES (?,?,?)')
-create_quiz_q = ('CREATE TABLE quiztable (id INT PRIMARY KEY,' 
-      'count INT, operation TEXT, difficulty TEXT, modification TEXT, time INT, timer INT, speed REAL, min INT, max INT, errors INT, date INT)')
+create_quiz_q = ('CREATE TABLE quiztable (id INTEGER PRIMARY KEY,' 
+      'count INT, operation TEXT, difficulty TEXT, modification TEXT, time INT, timer INT, speed REAL, min INT, max INT, errors INT, date TIMESTAMP)')
 select_quiz_q = 'SELECT * FROM quiztable'
 select_template_q = Template('SELECT * FROM $tbname')
 
@@ -38,7 +39,7 @@ def init_traintable_data(tablename):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG,)
-    with sqlite3.connect('sqlite3.db') as conn: 
+    with dbconnect() as conn:#sqlite3.connect('sqlite3.db') as conn: 
         cursor = conn.cursor()
         try:
             cursor.execute(create_quiz_q)

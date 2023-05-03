@@ -52,39 +52,27 @@ def mul_get(mod, diff):
         if randquarter():
             b = round(1/b, digs)
         return '{a} * {b} = ?', '%f'% a * b
-        
-        
     
     match mod:
         case Mod.TABLE:
             weights, questions = db_get_multable_weights()
-            return functools.partial(mul_table, cum_weights(weights), questions), mul['difficulty'][0]
+            return functools.partial(mul_table, cum_weights(weights), questions), mul['difficulty'][0]['name']
         case Mod.COMMON:
-            return functools.partial(mul_comm, *diff['nums']), diff
+            return functools.partial(mul_comm, *diff['nums']), diff['name']
         case Mod.NEG:
-            return functools.partial(mul_neg, *diff['nums']), diff
+            return functools.partial(mul_neg, *diff['nums']), diff['name']
         case Mod.UPTEN:
             ten_cap = 10 ** diff['lvl'] + 2
-            return functools.partial(mul_ten, ten_cap), diff
+            return functools.partial(mul_ten, ten_cap), diff['name']
         case Mod.LONGA:
             low = 10 ** diff['lvl'] + 1
             high = 10 ** diff['lvl'] + 3
             if diff['lvl'] == 4:
                 low = 1
                 high = 10 ** 8
-            return functools.partial(mul_long, low, high), diff
+            return functools.partial(mul_long, low, high), diff['name']
         case Mod.FLOAT:
-            return functools.partial(mul_float, *diff['fnums']), diff
-
-def diff_get(val=None):
-    if val:
-        for i, diff in enumerate(mul['difficulty']):
-            if diff['name'] == val:
-                 return i
-    diffs = []
-    for diff in mul['difficulty']:
-        diffs.append(diff['name'])
-    return diffs
+            return functools.partial(mul_float, *diff['fnums']), diff['name']
 
 mul = {
     'name':'Multiplication',
@@ -99,5 +87,4 @@ mul = {
     ],
     'mod': Mod,
     'get': mul_get,
-    'diff': diff_get,
 }

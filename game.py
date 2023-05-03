@@ -1,7 +1,6 @@
 import PySimpleGUI as sg
 import sys
 import time
-import datetime
 
 quiz_timer_dur = 180
 
@@ -20,11 +19,14 @@ def start_quiz(caption, question_tuple, count, mod, op, *spec) -> None:
     large_fnt = 'Arial 22'
     q_txt = 'question_text'
     a_it = 'answer_inputtext'
-    question = ''
-    answered = False
     answers = []
-    answer = 0
     save_results = True
+    first_question = True
+    quiz_start = 0
+    quiz_end = 0
+    slowest = 0
+    fastest = sys.maxsize
+
     sg.theme('DarkBlue14')
 
     layout = [  [sg.Text('count n/N'), sg.Text('timer m:s')],
@@ -34,21 +36,15 @@ def start_quiz(caption, question_tuple, count, mod, op, *spec) -> None:
 
     window = sg.Window(caption, layout, finalize=True)
 
-    quiz_dur = 0
-    first_question = True
-    slowest = 0
-    fastest = sys.maxsize
+    while quiz_end - quiz_start < quiz_timer_dur:
+        print(f'ct:{round(time.time() - quiz_start)} < {quiz_timer_dur}')
 
-    while time.time() - quiz_dur < quiz_timer_dur * 1000 * 10000:
-        print(f'ct:{round(time.time() - quiz_dur)} < {quiz_timer_dur}')
-        q = next(q_gen)
-        question, answer = q
+        question, answer = next(q_gen)
         answered = False
-        
+        question_start = time.time()
 
         print('q:%s, a:%s'%(question, answer))
         while not answered:   
-            start_time = time.time()
             window[q_txt].update(question)
             event, values = window.read()
 
@@ -60,23 +56,25 @@ def start_quiz(caption, question_tuple, count, mod, op, *spec) -> None:
             if values[a_it] == answer:
                 if first_question:
                     first_question = False
-                    quiz_dur = time.time()
+                    quiz_start = time.time()
                 else:
-                    dur = time.time() - start_time
-                    slowest = max(dur, slowest)
-                    fastest = min(dur, fastest)
-                    answers.append((question, answer, 0, dur))
+                    question_dur = time.time() - question_start
+                    quiz_end = time.time()
+                    slowest = max(question_dur, slowest)
+                    fastest = min(question_dur, fastest)
+                    answers.append((question, answer, 0, question_dur))
                 window[a_it].update('')
                 answered = True
         else:
-            continue
+            continue # if inner cycle not broken continue outer
         break
 
     window.close()
 
-    if save_results:
+    if save_results and (count := len(answers)):
         print('save result')
-        quiz_dur = time.time() - quiz_dur
-        average = count / quiz_dur
-        return (len(answers), op.value, diff['name'], mod.value, quiz_dur, quiz_timer_dur, fastest, slowest, average, 0, answers,)
+        quiz_dur = quiz_end - quiz_start
+#        count = len(answers)
+        average = quiz_dur / count
+        return (count, op, diff, mod, quiz_dur, quiz_timer_dur, fastest, slowest, average, 0, answers,)
     return None
