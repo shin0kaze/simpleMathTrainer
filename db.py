@@ -5,22 +5,23 @@ from db_utils import upd_traintable_data
 
 dbpath = 'sqlite3.db'
 
-if not os.path.isfile('sqlite3.db'):
-    pass
 
 def dbconnect():
     return sqlite3.connect(dbpath, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
 
+
 def save(count, operation, difficulty, modification, time, timer, min, max, avg, errors=0,):
     with dbconnect() as conn:
         cur = conn.cursor()
-        row = (count, operation, difficulty, modification, time, timer, avg, min, max, errors, datetime.datetime.now())
+        row = (count, operation, difficulty, modification, time,
+               timer, avg, min, max, errors, datetime.datetime.now())
         insert_q = 'INSERT INTO quiztable' \
-                '(count, operation, difficulty, modification, time, timer, speed, min, max, errors, date)' \
-                'VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
+            '(count, operation, difficulty, modification, time, timer, speed, min, max, errors, date)' \
+            'VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
         cur.execute(insert_q, row)
 
-def read(operation, difficulty, modification, full, timer = 180):
+
+def read(operation, difficulty, modification, full, timer=180):
     with dbconnect() as conn:
         cur = conn.cursor()
         complete_only = ' and time >= timer' if full else ''
@@ -28,6 +29,7 @@ def read(operation, difficulty, modification, full, timer = 180):
         select_q = f'SELECT id, speed, min, max FROM quiztable WHERE {condition}'
         cur.execute(select_q)
         return cur.fetchall()
+
 
 def db_get_traintable(tbname):
     with dbconnect() as conn:
@@ -40,6 +42,7 @@ def db_get_traintable(tbname):
             pass
         return data
 
+
 def db_upd_traintable(tbname, db_entities, entities):
     with dbconnect() as conn:
         cur = conn.cursor()
@@ -49,12 +52,7 @@ def db_upd_traintable(tbname, db_entities, entities):
         update_q = f'UPDATE {tbname} SET prob = ? WHERE question == ?'
         print(update_q)
         cur.executemany(update_q, db_upd_ents)
-    
+
 
 if __name__ == "__main__":
     cursor = dbconnect().cursor()
-    update_q = f'UPDATE multable SET prob = ? WHERE question == ?'
-    update_q2 = f'UPDATE multable SET prob = 2.0 WHERE question == 2 * 3'
-    print(update_q2)
-    cursor.execute(update_q2)
-    #cursor.execute(update_q, (2.0, '2 * 5'))

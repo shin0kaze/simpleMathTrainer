@@ -1,17 +1,17 @@
 from matplotlib import pyplot as plt
 
+
 def draw_scores(data):
-    
+
     idx, *data = map(list, zip(*data))
     scores = []
     for i in range(len(idx)):
         scores.append((data[0][i], data[1][i], data[2][i]))
-    #print(idx)
-    #print(scores)
-    plt.plot(idx, scores, label=['avg speed','fastest','slowest'])
+    plt.plot(idx, scores, label=['avg speed', 'fastest', 'slowest'])
     plt.legend(loc="upper left")
     plt.xticks([])
     plt.show()
+
 
 if __name__ == "__main__":
     idx = [0, 1, 2]

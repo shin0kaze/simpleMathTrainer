@@ -5,20 +5,23 @@ import sys
 import time
 
 
-
 quiz_timer_dur = 10
+
 
 def __run_timer(event, label, duration, start_time):
     while not event.is_set():
-        label.update(f'timer: {round(duration - (time.time() - start_time), 1)}')
+        label.update(
+            f'timer: {round(duration - (time.time() - start_time), 1)}')
+
 
 def __qGen(question_func, count):
     for i in range(count):
         yield question_func()
     return
 
+
 def start_quiz(caption, question_tuple, count, mod, op) -> None:
-    
+
     func, diff = question_tuple
     q_gen = __qGen(func, count)
     q_txt = 'question_text'
@@ -34,10 +37,10 @@ def start_quiz(caption, question_tuple, count, mod, op) -> None:
 
     sg.theme('DarkBlue14')
 
-    layout = [  [sg.Text('count n/N'), sg.Text(f'timer: {quiz_timer_dur}', key=l_timer)],
-                [sg.Text('1 QUESTION', font='Arial 22', key=q_txt)],
-                [sg.InputText(key=a_it, enable_events=True) ],
-                [sg.Button('Stop and save')], [sg.Button('Cancel')] ]
+    layout = [[sg.Text('count n/N'), sg.Text(f'timer: {quiz_timer_dur}', key=l_timer)],
+              [sg.Text('1 QUESTION', font='Arial 22', key=q_txt)],
+              [sg.InputText(key=a_it, enable_events=True)],
+              [sg.Button('Stop and save')], [sg.Button('Cancel')]]
 
     window = sg.Window(caption, layout, finalize=True)
     timer_event = Event()
@@ -49,20 +52,21 @@ def start_quiz(caption, question_tuple, count, mod, op) -> None:
         question_start = time.time()
 
         logging.debug(f'q:{question}, a:{answer}')
-        while not answered:   
+        while not answered:
             event, values = window.read()
 
             if event == sg.WIN_CLOSED or event == 'Cancel':
                 save_results = False
                 break
             if event == 'Stop and save':
-                break          
+                break
 
             if values[a_it] == answer:
                 if first_question:
                     first_question = False
                     quiz_start = time.time()
-                    Thread(target = __run_timer, args = (timer_event, window[l_timer], quiz_timer_dur, quiz_start)).start()
+                    Thread(target=__run_timer, args=(
+                        timer_event, window[l_timer], quiz_timer_dur, quiz_start)).start()
                 else:
                     question_dur = time.time() - question_start
                     quiz_end = time.time()
@@ -71,11 +75,11 @@ def start_quiz(caption, question_tuple, count, mod, op) -> None:
                     answers.append((question_dur, question, answer, 0))
                 window[a_it].update('')
                 answered = True
-      
+
         else:
-            continue # if inner cycle not broken continue outer
+            continue  # if inner cycle not broken continue outer
         break
-    
+
     timer_event.set()
     window.close()
 
