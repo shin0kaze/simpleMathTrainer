@@ -30,27 +30,20 @@ def read(operation, difficulty, modification, full, timer = 180):
         return cur.fetchall()
 
 def db_get_traintable(tbname):
-    conn, cursor = dbconnect()
-    # drop_q = 'DROP TABLE multable'
-    # cursor.execute(drop_q)
-    select_q = f'SELECT prob, question, answer FROM {tbname}'
-    try:
-        cursor.execute(select_q)
-        data = cursor.fetchall()
-    except:
-        pass
-        # create_q = 'CREATE TABLE %s (id INT PRIMARY KEY, prob real, question text, answer text)'% tbname
-        # insert_q = 'INSERT INTO %s (prob, question, answer) VALUES (?,?,?)'% tbname
-        # cursor.execute(create_q)
-        # initial_data = init_traintable_data(tbname)
-        # cursor.executemany(insert_q, initial_data)
-        # cursor.execute(select_q)
-        # data = cursor.fetchall()
-        # conn.close()
-    return data
+    with dbconnect() as conn:
+        cur = conn.cursor()
+        select_q = f'SELECT prob, question, answer FROM {tbname}'
+        try:
+            cur.execute(select_q)
+            data = cur.fetchall()
+        except:
+            pass
+        return data
 
 def db_upd_traintable(tbname, db_entities, entities):
     cursor = dbconnect().cursor()
     db_upd_ents = upd_traintable_data(db_entities, entities)
-    update_q = f'UPDATE {tbname} VALUES (id, question, answer) VALUES (?,?,?)'
+    print(db_upd_ents)
+    update_q = f'UPDATE {tbname} SET prob = ? WHERE question == ?'
+    print(update_q)
     cursor.executemany(update_q, db_upd_ents)

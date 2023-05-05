@@ -1,6 +1,6 @@
 from tasks.mul import mul
 from enum import Enum
-import db
+
 class OpType(Enum):
     MUL = 'Multiplication'
 
@@ -28,5 +28,3 @@ def diff_get(val=None):
         diffs.append(diff['name'])
     return diffs
 
-def get_traindata(tbname):
-    return db.db_get_traintable(tbname)

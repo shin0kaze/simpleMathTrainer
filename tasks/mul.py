@@ -1,7 +1,7 @@
 import random
 from enum import Enum
 import functools
-from tasks.utils import cum_weights, randbool, randquarter
+from tasks.utils import *
 
 class Mod(Enum):
     COMMON = 'Common'
@@ -11,8 +11,12 @@ class Mod(Enum):
     NEG = 'Allow negatives'
     FLOAT = 'Allow float'
 
-def mul_get(mod, diff):
+def mul_get(mod, diff, *spec):
     def mul_table(cum_probs, questions):
+        print(cum_probs)
+        print(questions)
+        print(len(cum_probs))
+        print(len(questions))
         question, answer = random.choices(cum_weights=cum_probs, population=questions)[0]
         return question, answer
     
@@ -54,24 +58,24 @@ def mul_get(mod, diff):
         return '{a} * {b} = ?', '%f'% a * b
     
     match mod:
-        case Mod.TABLE:
-            weights, questions = db_get_multable_weights()
+        case Mod.TABLE.value:
+            weights, questions = train_to_lists(spec[0])
             return functools.partial(mul_table, cum_weights(weights), questions), mul['difficulty'][0]['name']
-        case Mod.COMMON:
+        case Mod.COMMON.value:
             return functools.partial(mul_comm, *diff['nums']), diff['name']
-        case Mod.NEG:
+        case Mod.NEG.value:
             return functools.partial(mul_neg, *diff['nums']), diff['name']
-        case Mod.UPTEN:
+        case Mod.UPTEN.value:
             ten_cap = 10 ** diff['lvl'] + 2
             return functools.partial(mul_ten, ten_cap), diff['name']
-        case Mod.LONGA:
+        case Mod.LONGA.value:
             low = 10 ** diff['lvl'] + 1
             high = 10 ** diff['lvl'] + 3
             if diff['lvl'] == 4:
                 low = 1
                 high = 10 ** 8
             return functools.partial(mul_long, low, high), diff['name']
-        case Mod.FLOAT:
+        case Mod.FLOAT.value:
             return functools.partial(mul_float, *diff['fnums']), diff['name']
 
 mul = {
@@ -87,4 +91,8 @@ mul = {
     ],
     'mod': Mod,
     'get': mul_get,
+    'db' :{Mod.TABLE.value:'multable'}
 }
+
+if __name__ == 'main':
+    pass

@@ -1,12 +1,12 @@
 import random
-from tasks import OpType, tbnames
+#from tasks import OpType, tbnames
 
 def cum_weights(weights):
     cum_w = []
     current = 0.
     for w in weights:
         current += w
-        cum_w = current
+        cum_w.append(current)
     return cum_w
 
 def randnum_len(n, m):
@@ -29,3 +29,11 @@ def roundstr(value, digs):
                 if int(last_dig) > 4:
                     val_str[-1] = int(val_str[-1])
         return val_str
+
+def train_to_lists(data):
+    probs = []
+    questions = []
+    for row in data:
+        probs.append(row[0])
+        questions.append((row[1], row[2]))
+    return (probs, questions)
