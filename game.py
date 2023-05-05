@@ -68,7 +68,7 @@ def start_quiz(caption, question_tuple, count, mod, op) -> None:
                     quiz_end = time.time()
                     slowest = max(question_dur, slowest)
                     fastest = min(question_dur, fastest)
-                    answers.append((question, answer, question_dur, 0,))
+                    answers.append((question_dur, question, answer, 0))
                 window[a_it].update('')
                 answered = True
       

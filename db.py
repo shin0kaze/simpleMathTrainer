@@ -41,9 +41,20 @@ def db_get_traintable(tbname):
         return data
 
 def db_upd_traintable(tbname, db_entities, entities):
+    with dbconnect() as conn:
+        cur = conn.cursor()
+        print(entities)
+        db_upd_ents = upd_traintable_data(db_entities, entities)
+        print(db_upd_ents)
+        update_q = f'UPDATE {tbname} SET prob = ? WHERE question == ?'
+        print(update_q)
+        cur.executemany(update_q, db_upd_ents)
+    
+
+if __name__ == "__main__":
     cursor = dbconnect().cursor()
-    db_upd_ents = upd_traintable_data(db_entities, entities)
-    print(db_upd_ents)
-    update_q = f'UPDATE {tbname} SET prob = ? WHERE question == ?'
-    print(update_q)
-    cursor.executemany(update_q, db_upd_ents)
+    update_q = f'UPDATE multable SET prob = ? WHERE question == ?'
+    update_q2 = f'UPDATE multable SET prob = 2.0 WHERE question == 2 * 3'
+    print(update_q2)
+    cursor.execute(update_q2)
+    #cursor.execute(update_q, (2.0, '2 * 5'))
