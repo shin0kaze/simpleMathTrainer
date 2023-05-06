@@ -5,9 +5,6 @@ import sys
 import time
 
 
-quiz_timer_dur = 10
-
-
 def __run_timer(event, label, duration, start_time):
     while not event.is_set():
         label.update(
@@ -20,7 +17,7 @@ def __qGen(question_func, count):
     return
 
 
-def start_quiz(caption, question_tuple, count, mod, op) -> None:
+def start_quiz(caption, quiz_timer_dur, question_tuple, count, mod, op) -> None:
 
     func, diff = question_tuple
     q_gen = __qGen(func, count)

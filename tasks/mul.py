@@ -15,10 +15,6 @@ class Mod(Enum):
 
 def mul_get(mod, diff, *spec):
     def mul_table(cum_probs, questions):
-        print(cum_probs)
-        print(questions)
-        print(len(cum_probs))
-        print(len(questions))
         question, answer = random.choices(
             cum_weights=cum_probs, population=questions)[0]
         return question, answer
@@ -28,26 +24,26 @@ def mul_get(mod, diff, *spec):
         b = random.randint(low, high)
         if randbool():
             a, b = b, a
-        return '{a} * {b} = ?', '%f' % a * b
+        return f'{a} * {b} = ?', f'{a * b}'
 
     def mul_ten(cap):
 
         a = random.randint(2, cap//2)
         high = cap // a
         b = random.randint(2, high)
-        return '{a} * {b} = ?', '%f' % a * b
+        return f'{a} * {b} = ?', f'{a * b}'
 
     def mul_comm(low, high):
         a = random.randint(low, high)
         b = random.randint(low, high)
-        return f'{a} * {b} = ?', f'{a*b}'
+        return f'{a} * {b} = ?', f'{a * b}'
 
     def mul_neg(low, high):
         a = random.randint(low, high)
         b = random.randint(low, high)
         a = a if randbool() else -a
         b = a if randbool() else -b
-        return '{a} * {b} = ?', '%f' % a * b
+        return f'{a} * {b} = ?', f'{a * b}'
 
     def mul_float(low, high, digs):
         a = round(random.uniform(low, high), digs)
@@ -58,7 +54,7 @@ def mul_get(mod, diff, *spec):
             a = round(1/a, digs)
         if randquarter():
             b = round(1/b, digs)
-        return '{a} * {b} = ?', '%f' % a * b
+        return f'{a} * {b} = ?', f'{round(a * b, digs)}'
 
     match mod:
         case Mod.TABLE.value:
@@ -98,6 +94,3 @@ mul = {
     'get': mul_get,
     'db': {Mod.TABLE.value: 'multable'}
 }
-
-if __name__ == 'main':
-    pass

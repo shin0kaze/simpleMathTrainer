@@ -43,3 +43,24 @@ def train_to_lists(data):
         probs.append(row[0])
         questions.append((row[1], row[2]))
     return (probs, questions)
+
+
+if __name__ == '__main__':
+    from mul import mul
+    import os
+    import sys
+    import inspect
+    currentdir = os.path.dirname(os.path.abspath(
+        inspect.getfile(inspect.currentframe())))
+    parentdir = os.path.dirname(currentdir)
+    sys.path.insert(0, parentdir)
+    import db
+    diff = mul['difficulty'][1]
+    mods = mul['mod']
+    for mod in mods:
+        tbname = mul['db'].get(mod.value)
+        datas = db.db_get_traintable(tbname) if tbname else None
+        qfunc, actual_diff = mul['get'](mod.value, diff, datas)
+        print(f'mod: {mod}, diff: {actual_diff}, tb: {tbname}')
+        for i in range(5):
+            print(qfunc())

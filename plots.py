@@ -20,3 +20,6 @@ if __name__ == "__main__":
     avg = [0.7, 0.8, 0.7]
     all = [(0, 1.1, 0.3, 0.7), (1, 1.2, 0.4, 0.8)]
     draw_scores(all)
+#  
+# <!--@nested-tags:topic,here/is/a/nested/example--> ! DEPRECATED
+# <!--@nested-tags:topic,here/is/a/nested/example-->

@@ -11,8 +11,8 @@ def __start_game(quiz_data, operation, difficulty, modification):
     datas = db.db_get_traintable(tbname) if tbname else None
 
     qfunc = quiz_data['get'](modification, difficulty, datas)
-    *data_to_save, answers = start_quiz('test',
-                                        qfunc, 1000, modification, operation)
+    *data_to_save, answers = start_quiz(f'{quiz_data["name"]}:{modification}:{difficulty}',
+                                        120, qfunc, 1000, modification, operation)
     if answers:
         db.save(*data_to_save)
         if tbname:
@@ -63,6 +63,7 @@ def open_traincalc_window():
 
         if event == 'Scores':
             is_complete_only = values[cb_full]
-            __draw_scores_plot(operation, difficulty, mod, is_complete_only)
+            __draw_scores_plot(
+                operation, difficulty['name'], mod, is_complete_only)
 
     window.close()

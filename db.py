@@ -3,6 +3,7 @@ import sqlite3
 import datetime
 from db_utils import upd_traintable_data
 
+
 dbpath = 'sqlite3.db'
 
 
@@ -24,9 +25,10 @@ def save(count, operation, difficulty, modification, time, timer, min, max, avg,
 def read(operation, difficulty, modification, full, timer=180):
     with dbconnect() as conn:
         cur = conn.cursor()
-        complete_only = ' and time >= timer' if full else ''
+        complete_only = 'and time >= timer' if full else ''
         condition = f"operation == '{operation}' and difficulty == '{difficulty}' and modification == '{modification}' and timer == {timer} {complete_only}"
         select_q = f'SELECT id, speed, min, max FROM quiztable WHERE {condition}'
+        print(select_q)
         cur.execute(select_q)
         return cur.fetchall()
 
